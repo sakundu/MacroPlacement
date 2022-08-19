@@ -4,7 +4,7 @@ portions of Circuit Training.
 
 
 ## **I. Information provided by Google.**
-The Methods section of the [Nature paper](https://www.nature.com/articles/s41586-021-03544-w.epdf?sharing_token=tYaxh2mR5EozfsSL0WHZLdRgN0jAjWel9jnR3ZoTv0PW0K0NmVrRsFPaMa9Y5We9O4Hqf_liatg-lvhiVcYpHL_YQpqkurA31sxqtmA-E1yNUWVMMVSBxWSp7ZFFIWawYQYnEXoBE4esRDSWqubhDFWUPyI5wK_5B_YIO-D_kS8%3D) provides the following information.
+The Methods section of the [Nature paper](https://www.nature.com/articles/s41586-021-03544-w.epdf) provides the following information.
 
 
 * “(1) We group millions of standard cells into a few thousand clusters using hMETIS, a partitioning technique based 
@@ -51,12 +51,11 @@ Finally, the Methods section of the [Nature paper](https://www.nature.com/articl
 ## **II. What *exactly* is the Hypergraph, and how is it partitioned?**
 From the above information sources, the description of the [Grouping](https://github.com/TILOS-AI-Institute/MacroPlacement/blob/main/CodeElements/Grouping/README.md) process, and information provided by Google engineers, we are fairly certain of the following.
 * (1) Clustering uses the hMETIS partitioner, which is run in “multiway” mode. 
-More specifically, hMETIS is **always** invoked with *nparts*=500, with unit vertex weights. 
+More specifically, hMETIS is **always** invoked with *nparts*=500 + number of "fixed" (i.e., specified as monolithic clusters of vertices, using the .fix input file mechanism of hMETIS) groups, with unit vertex weights. 
 The hyperparameters given in Extended Data Table 3 of the [Nature paper](https://www.nature.com/articles/s41586-021-03544-w.epdf?sharing_token=tYaxh2mR5EozfsSL0WHZLdRgN0jAjWel9jnR3ZoTv0PW0K0NmVrRsFPaMa9Y5We9O4Hqf_liatg-lvhiVcYpHL_YQpqkurA31sxqtmA-E1yNUWVMMVSBxWSp7ZFFIWawYQYnEXoBE4esRDSWqubhDFWUPyI5wK_5B_YIO-D_kS8%3D) are used. 
 (Additionally, Circuit Training explicitly sets reconst=1 and dbglvl=0.)
 
-* (2) The hypergraph that is fed to hMETIS consists **only** of standard cells and “fixed” 
-(i.e., specified as monolithic clusters of vertices, using the .fix input file mechanism of hMETIS) groups of standard cells.
+* (2) The hypergraph that is fed to hMETIS consists of ports, macro pins and standard cells, and “fixed” groups of ports and standard cells, or macro pins and standard cells.
 
 
 Before going further, we provide a **concrete example** for (2).
@@ -71,8 +70,8 @@ each of which induces a group of 50 standard cells.
 
 * The number of individual standard cells in the hypergraph that is actually partitioned by hMETIS is 200,000 - (100 * 300) - (20 * 50) = 169,000.
 
-* Note: To our understanding, applying hMETIS with *nparts* = 500 to this hypergraph, with 120 entries in the .fix file, 
-will partition 169,000 standard cells into 500 - 120 = 380 clusters.  All of the above understanding is in the process of being reconfirmed.
+* Note: To our understanding, applying hMETIS with *nparts* = 500 + 120 = 620 to this hypergraph, with 120 entries in the .fix file, 
+will partition 169,000 standard cells into 500 clusters.  All of the above understanding is in the process of being reconfirmed.
 
 
 We call readers’ attention to the existence of significant aspects that are still pending clarification here.  
@@ -86,7 +85,7 @@ All methodologies that span synthesis and placement (of which we are aware) must
 * ***Pending clarification #2: Are large nets ignored in hypergraph clustering (and hence placement)? If so, at what net size threshold?***
 All hypergraph partitioning applications in physical design (of which we are aware) perform some kind of thresholding to ignore large hyperedges. 
 Our implementation of hypergraph clustering takes a parameter, *net_size_threshold*, and ignores all hyperedges of size greater 
-than or equal to *net_size_threshold*. The default value for this parameter is 300.
+than or equal to *net_size_threshold*. The default value for this parameter is 500.
 
 * ***Pending clarification #3: How does hMETIS with nparts = 500 and a nonempty .fix file create so many standard-cell clusters (soft macros)? What explains the variation in cluster area, given that hMETIS is run with UBfactor = 5?***  For example, the Ariane example data shown in Circuit Training’s [test_data](https://github.com/google-research/circuit_training/tree/main/circuit_training/environment/test_data/ariane) has 799 soft macros, although in practice Ariane synthesizes to only approximately (100K +/- 20K) standard cells along with its 133 hard macros. Furthermore, in the Circuit Training data, it is easy to see that all hard macros have identical dimensions 19.26(h) x 29.355(w), but that the 799 soft macros have dimensions in the range \[0.008 , 14.46\](h) x 10.18(w), implying areas that vary across a ~1500X range.
 
