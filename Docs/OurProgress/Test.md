@@ -1,0 +1,6 @@
+# Our Progress: A Chronology
+[MacroPlacement](../../) is an open, transparent effort to provide a public, baseline implementation of Google Brain’s Circuit Training (Morpheus) deep RL-based placement method.  In this repo,  we aim to achieve the following.
+- We want to enable anyone to perform RL-based macro placement on their own design, starting from design RTL files.
+- We want to enable anyone to train their own RL models based on their own designs in any design enablements, starting from design RTL files.
+- We want to demystify important aspects of the Google Nature paper, including aspects unavailable in Circuit Training and aspects where the Nature paper and Circuit Training clearly diverge, in order to help researchers and users better understand the methodology.
+- We want to apply learnings from the community’s collective experiences with the Google Brain team’s arXiv result, Nature paper and Circuit Training repo – and demonstrate how communication of research results might be improved in our community going forward.  A clear theme from the past months’ experience:  “There is no substitute for source code.”
