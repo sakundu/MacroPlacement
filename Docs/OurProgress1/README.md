@@ -1845,12 +1845,12 @@ The following table and screenshots show the CT result.
 
 ## **Pinned (to bottom) question list:**
 
-**<span style="color:blue">[Question 1](#Question1).</span>** How does having an initial set of placement locations (from physical synthesis) affect the (relative) quality of the CT result?
-**<span style="color:blue">[Question 2](#Question2).</span>** How does utilization affect the (relative) performance of CT?
-**<span style="color:blue">[Question 3](#Question3).</span>** Is a testcase such as Ariane-133 “probative”, or do we need better testcases?
-**<span style="color:blue">[Question 4](#Question4).</span>** How much does the guidance to clustering that comes from (x,y) locations matter?
-**<span style="color:blue">[Question 5](Question5).</span>** What is the impact of the Coordinate Descent (CD) placer on proxy cost and Table 1 metric?
-**<span style="color:blue">[Question 6](#Question6).</span>** Are we using the industry tool in an “expert” manner?  (We believe so.)
-**<span style="color:blue">[Question 7](#Question7).</span>** What happens if we skip CT and continue directly to standard-cell P&R (i.e., the Innovus 21.1 flow) once we have a macro placement from the commercial tool?
-**<span style="color:blue">[Question 8](#Question8).</span>** How does the tightness of timing constraints affect the (relative) performance of CT?  
+**<span style="color:blue">[Question 1](#Question1).</span>** How does having an initial set of placement locations (from physical synthesis) affect the (relative) quality of the CT result?  
+**<span style="color:blue">[Question 2](#Question2).</span>** How does utilization affect the (relative) performance of CT?  
+**<span style="color:blue">[Question 3](#Question3).</span>** Is a testcase such as Ariane-133 “probative”, or do we need better testcases?  
+**<span style="color:blue">[Question 4](#Question4).</span>** How much does the guidance to clustering that comes from (x,y) locations matter?  
+**<span style="color:blue">[Question 5](Question5).</span>** What is the impact of the Coordinate Descent (CD) placer on proxy cost and Table 1 metric?  
+**<span style="color:blue">[Question 6](#Question6).</span>** Are we using the industry tool in an “expert” manner?  (We believe so.)  
+**<span style="color:blue">[Question 7](#Question7).</span>** What happens if we skip CT and continue directly to standard-cell P&R (i.e., the Innovus 21.1 flow) once we have a macro placement from the commercial tool?  
+**<span style="color:blue">[Question 8](#Question8).</span>** How does the tightness of timing constraints affect the (relative) performance of CT?   
 
