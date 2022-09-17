@@ -261,7 +261,7 @@ class Clustering:
         # The random seed is 0 by default (in our implementation)
         # We use the hMetis C++ API to implement hMetis
         cmd  = self.hmetis_exe + " " + self.hypergraph_file + " " + self.hypergraph_fix_file + " "
-        cmd += str(self.Nparts) + " 5 10 5 3 3 0 0"
+        cmd += str(self.Nparts) + " 5 10 5 3 3 1 0"
         os.system(cmd)
 
         # read solution vector
@@ -278,7 +278,6 @@ class Clustering:
 
         for i in range(len(self.solution_vector)):
             self.vertices_in_cluster[self.solution_vector[i]].append(i)
-
 
     def GetBoundingBox(self, vertices_in_cluster):
         # get the bounding box of the cluster
@@ -297,7 +296,6 @@ class Clustering:
 
         return cluster_lx, cluster_ly, cluster_ux, cluster_uy
 
-
     def BreakLargeCluster(self, cluster_id):
         # For a cluster with bounding box (lx, ly, ux, uy)
         # if (ux - lx) > threshold or (uy - ly) > threshold, break the cluster
@@ -312,8 +310,8 @@ class Clustering:
 
         cluster_x = (cluster_lx + cluster_ux) / 2.0
         cluster_y = (cluster_ly + cluster_uy) / 2.0
-        num_x_grid = int((cluster_ux - cluster_x) / self.step_threshold)
-        num_y_grid = int((cluster_uy - cluster_y) / self.step_threshold)
+        num_x_grid = int(0.5 + (cluster_ux - cluster_x) / self.step_threshold)
+        num_y_grid = int(0.5 + (cluster_uy - cluster_y) / self.step_threshold)
         temp_vertices_in_cluster = {  }
         for i in range((-1) * num_x_grid, num_x_grid + 1):
             temp_vertices_in_cluster[i] = {   }
@@ -321,12 +319,22 @@ class Clustering:
                 temp_vertices_in_cluster[i][j] = [  ]
 
         for vertex in self.vertices_in_cluster[cluster_id]:
+            if self.is_io_macro_list[vertex]:
+                continue
             lx, ly, ux, uy = self.vertex_pos[vertex]
             x = (lx + ux) / 2.0
             y = (ly + uy) / 2.0
-            x_grid = int((x - cluster_x) / self.step_threshold)
-            y_grid = int((y - cluster_y) / self.step_threshold)
-            temp_vertices_in_cluster[i][j].append(vertex)
+            if x > cluster_x:
+                x_grid = int( 0.5 + (x - cluster_x) / self.step_threshold)
+            else:
+                x_grid = int( -0.5 + (x - cluster_x) / self.step_threshold)
+            
+            if y > cluster_y:
+                y_grid = int(0.5 + (y - cluster_y) / self.step_threshold)
+            else:
+                y_grid = int(-0.5 + (y - cluster_y) / self.step_threshold)
+            print(f'x:{x_grid} max x:{num_x_grid} y:{y_grid} max y:{num_y_grid}')
+            temp_vertices_in_cluster[x_grid][y_grid].append(vertex)
 
         # update the solution vector and vertices_in_cluster
         for x_grid, values in temp_vertices_in_cluster.items():
@@ -341,13 +349,11 @@ class Clustering:
                         self.vertices_in_cluster[self.max_cluster_id].append(vertex)
                         self.solution_vector[vertex] = self.max_cluster_id
 
-
     def BreakClusters(self):
         # In this step, we break clusters which spread around the canvas.
         clusters = list(self.vertices_in_cluster.keys())
         for cluster in clusters:
             self.BreakLargeCluster(cluster)
-
 
     def IsNearNeighbor(self, cluster, neighbor):
         dist  = abs(self.cluster_pos[cluster][0] - self.cluster_pos[neighbor][0])
@@ -392,6 +398,7 @@ class Clustering:
                     cluster_id = self.solution_vector[vertex]
                     if cluster_id not in cluster_net:
                         cluster_net.append(cluster_id)
+                
                 if (len(cluster_net) > 1):
                     for cluster_i in cluster_net:
                         for cluster_j in cluster_net:
