@@ -19,7 +19,7 @@ The following describes our learning related to testcase generation and its impl
 4. We provide power grid generation [scripts](../../Flows/util/pdn_flow.tcl) for Cadence Innovus. During the power grid (PG) generation process we made sure the routing resource used by the PG is in the range of ~20%, matching the guidance given in Circuit Training.
 5. Also we provide an Innovus Tcl [script](../../Flows/util/extract_report.tcl) to extract the metrics reported in Table 1 of “[A graph placement methodology for fast chip design](https://www.nature.com/articles/s41586-021-03544-w)”, **at three stages of the post-floorplanning P&R flow, i.e., pre-CTS, post-CTSOpt, and post-RouteOpt (final)**. This [script](../../Flows/util/extract_report.tcl) is included in the P&R flow. The extracted metrics for all of our designs, on different enablements, are available [here](../../ExperimentalData/).  
   
-<a id="June6"></a>
+<a id="June10"></a>
 **June 10:** [grouper.py](https://github.com/google-research/circuit_training/blob/main/circuit_training/grouping/grouper.py) was released in CircuitTraining. **This revealed that protobuf input to the hypergraph clustering into soft macros included the (x,y) locations of the nodes**. (A [grouper.py](https://github.com/google-research/circuit_training/blob/main/circuit_training/grouping/grouper.py) script had been shown to Prof. Kahng during a meeting at Google on May 19.) The use of (x,y) locations from a physical synthesis tool was very unexpected, since it is not mentioned in “Methods” or other descriptions given in the Nature paper. We raised [issue #25](https://github.com/google-research/circuit_training/issues/25#issue-1268683034) to get clarification about this. [**July 10**: The [README](https://github.com/google-research/circuit_training/blob/main/circuit_training/grouping/README.md#faq) added to [the grouping area](https://github.com/google-research/circuit_training/tree/main/circuit_training/grouping) of CircuitTraining confirmed that the input netlist has all of its nodes **already placed**.]  
  
 We currently use the physical synthesis tool **Cadence Genus iSpatial** to obtain (x,y) placed locations per instance as part of the input to Grouping. The Genus iSpatial post-physical-synthesis netlist is the starting point for how we produce the clustered netlist and the *.plc file which we provide as open inputs to CircuitTraining. From post-physical-synthesis netlist to clustered netlist generation can be divided into the following steps, which we have implemented as open-source in our CodeElements area:
@@ -183,7 +183,7 @@ We currently use the physical synthesis tool **Cadence Genus iSpatial** to obtai
 </tbody>
 </table>
 
-<a id="August18"/></a>
+<a id="August18"></a>
 **August 18:** The flat post-physical-synthesis protobuf netlist of [Ariane133-NanGate45](../../Flows/NanGate45/ariane133/) design is used as input to [CT grouping](https://github.com/google-research/circuit_training/tree/main/circuit_training/grouping) code to generate the clustered netlist. We then use this clustered netlist in Circuit Training. [Coordinate Descent](https://github.com/google-research/circuit_training/blob/main/circuit_training/environment/coordinate_descent_placer.py) is (by [default](https://github.com/google-research/circuit_training/blob/9e7097fa0c2a82030f43b298259941fc8ca6b7ae/circuit_training/learning/eval.py#L50-L52)) not applied to any macro placement solution. Here is the [link](https://tensorboard.dev/experiment/eCRHe29LQvi1sdAPD61Q6A/#scalars) to our tensorboard. We ran Innovus P&R starting from the macro placement generated using CT, through the end of detailed routing (RouteOpt) and collection of final PPA / “Table 1” metrics. Following are the metrics and screen shots of the P&R database. **Throughout the SP&R flow, the target clock period is 4ns**. The power grid overhead is 18.46% in the actual P&R setup, matching the 18% [mentioned](https://github.com/google-research/circuit_training/blob/9e7097fa0c2a82030f43b298259941fc8ca6b7ae/circuit_training/environment/placement_util.py#L183-L186) in the Circuit Training repo. **All results are for DRC-clean final routing produced by the Innovus tool**.   
 <span style="color:blue">[In the immediately-following content, we also show comparison results using other macro placement methods, collected since August 18.]  
 [As of August 24 onward, we refer to this testcase as “Our Ariane133-NanGate45_51” since it has 51% area utilization. A second testcase, “Our Ariane133-NanGate45_68”, has 68% area utilization which exactly matches that of the Ariane in Circuit Training.]</span>
@@ -977,7 +977,7 @@ We currently use the physical synthesis tool **Cadence Genus iSpatial** to obtai
 
 **August 26:** <span style="color:blue">Moving on to understand benefits and limitations of the Circuit Training methodology itself</span>. This next stage of study is enabled by confidence in the technical solidity of what has been accomplished so far – again, with the help of Google engineers.
 
-<a id="Question1"/></a>
+<a id="Question1"></a>
 **<span style="color:blue">Question 1.</span>** How does having an initial set of placement locations (from physical synthesis) affect the (relative) quality of the CT result?  
  
 *A preliminary exercise has compared outcomes when the Genus iSpatial (x,y) coordinates are given, versus when vacuous (x,y) coordinates are given. The following CT result is for the “**Our Ariane133-NanGate45_68**” example where the input protobuf netlist to Circuit Training’s grouping code has all macro and standard cell locations set to (600, 600). This is just an exercise for now: other, carefully-designed experiments will be performed over the coming weeks and months.*
@@ -1180,13 +1180,13 @@ The following table and screenshots show results for (max_x, max_y), where max_x
 <img width="300" src="./images/image33.png" alg="Ariane133_68_CT_Vacuous3_Route">
 </p>
 
-**<span style="color:blue">Question 2.</span>** How does utilization affect the (relative) performance of CT?
+**<span style="color:blue">Question 2.</span>** How does utilization affect the (relative) performance of CT?  
 
-<a id="Question3" /></a>
+<a id="Question3"></a>
 **<span style="color:blue">Question 3.</span>** Is a testcase such as Ariane-133 “probative”, or do we need better testcases?
 
 *A preliminary exercise has examined Innovus P&R outcomes when the Circuit Training macro placement locations for Our Ariane133-NanGate45_68 are **randomly shuffled**. The results for four seed values used in the shuffle, and for the original Circuit Training result, are as follows.*
-
+  
 <table>
 <thead>
   <tr>
@@ -1387,7 +1387,7 @@ The following table and screenshots show results for (max_x, max_y), where max_x
 </table>
 
 
-**September 9:** 
+**September 9:**  
 - We have added two more vacuous initial placements to the study of [Question 1](#Question1). 
 - We have added an initial study of impact from placement guidance to clustering. See [Question 4](#Question4).  
 - We have taken a look at the impact of Coordinate Descent on proxy cost and on Table 1 metrics. See [Question 5](#Question5).
@@ -1396,7 +1396,7 @@ The following table and screenshots show results for (max_x, max_y), where max_x
 - We have obtained an initial CT result on a second testcase, NVDLA, [here]().
 - As this running log is becoming unwieldy, we propose to pin a summary of questions and conclusions to date at the bottom of this document.  We will also add this into our GitHub, as planned.  And, we request that questions and experimental requests be posed as GitHub issues, and that the limited bandwidth and resources of students be taken into account when making these requests. 
 
-<a id="Question4" /></a>
+<a id="Question4"></a>
 **<span style="color:blue">Question 4.</span>** How much does the **guidance** to **clustering** that comes from (x,y) locations matter?
  
 We answer this by using hMETIS to generate the same number of soft macros from the same netlist, but only via the npart (number of partitions) parameter. The value of npart in the call to hMETIS is chosen to match the number of standard-cell clusters (i.e., soft macros) obtained in the CT grouping process. Then, to preserve this number of soft macros, we skip the **[break up](https://github.com/google-research/circuit_training/blob/b9f53c25ccdb8e588b12d09bf2b1c94bfa1c2b89/circuit_training/grouping/grouping.py#L721) and [merge](https://github.com/google-research/circuit_training/blob/b9f53c25ccdb8e588b12d09bf2b1c94bfa1c2b89/circuit_training/grouping/grouping.py#L598)** stage in CT grouping.
@@ -1468,7 +1468,7 @@ We run hMETIS with npart = 810 (number of fixed groups is 153) to match the tota
 <img width="300" src="./images/image28.png" alg="Ariane133_68_CT_Vacuous4_Route">
 </p>
 
-<a id="Question5" /></a>
+<a id="Question5"></a>
 **<span style="color:blue">Question 5.</span>** What is the impact of the Coordinate Descent (CD) placer on proxy cost and Table 1 metric?
 
 In our [August 18](#August18) notes, we mentioned that the default CT flow does NOT run coordinate descent. (Coordinate descent is not mentioned in the Nature paper.) The [result in the CT repo](https://github.com/google-research/circuit_training/blob/main/docs/ARIANE.md#results) shows the impact of Coordinate Descent (CD) on proxy cost for the Google Ariane design, but there is no data to show the impact of CD on Table 1 metrics.
