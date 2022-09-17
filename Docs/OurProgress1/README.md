@@ -1712,7 +1712,7 @@ At some point during the past weeks, we realized that this would also be a poten
     <td></td>
   </tr>
   <tr>
-    <td colspan="10"><p align="center">Concurrent macro placement (Ariane 51%) continuing straight into the Innovus 21.1 P&amp;R flow <span style="color:red">(no application of Circuit Training)</span> [**baseline CT result: <a href="#Ariane133_51_CT">here</a>]</p></td>
+    <td colspan="10"><p align="center"><b>Concurrent macro placement (Ariane 51%) continuing straight into the Innovus 21.1 P&amp;R flow <span style="color:red">(no application of Circuit Training)</span> [baseline CT result: <a href="#Ariane133_51_CT">here</a>]</b></p></td>
   </tr>
   <tr>
     <td>Physical Design Stage</td>
