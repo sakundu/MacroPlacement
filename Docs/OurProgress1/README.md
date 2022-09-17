@@ -515,7 +515,8 @@ We currently use the physical synthesis tool **Cadence Genus iSpatial** to obtai
 <a id="August20"></a>
 **August 20:** <span style="color:blue">Matching the area utilization</span>. We revisited the area utilization of Our Ariane133 and realized that it (51%) is lower than that of Google’s Ariane (68%). So that this would not devalue our study, we created a second variant,  “**Our Ariane133-NanGate45_68**”, which matches the area utilization of Google’s Ariane. Results are as given below.
   
-### **Circuit Training Baseline Result on “Our Ariane133-NanGate45**<span style="color:red">**_68**</span>**".**  
+### **Circuit Training Baseline Result on “Our Ariane133-NanGate45**<span style="color:red">**_68**</span>**".**
+<a id="Ariane133_68_CT"></a>  
 <table>
 <thead>
   <tr>
@@ -1045,6 +1046,7 @@ We currently use the physical synthesis tool **Cadence Genus iSpatial** to obtai
 <img width="300" src="./images/image36.png" alg="Ariane133_68_CT_Vacuous1_Route">
 </p>
 
+<a id="Question2"></a>
 **<span style="color:blue">Update to Question 1 on September 9:</span>** Two additional vacuous placements were run through the CT flow.
 - Place all macros and standard cells at the lower left corner i.e., (0, 0).
 - Place all macros and standard cells at the upper right corner, i.e., (max_x, max_y),  where max_x = 1347.1 and max_y = 1346.8.
@@ -1475,6 +1477,7 @@ In our [August 18](#August18) notes, we mentioned that the default CT flow does 
 
 We have taken the CT results generated for Ariane133-NG45 with 68% utilization through the CD placement step. The following table shows the effect of CD placer on proxy cost. The CD placer for this instance improves proxy wirelength and density at the cost of congestion, and overall proxy cost degrades slightly.
 
+<p align="center">
 <table>
 <thead>
   <tr>
@@ -1509,6 +1512,7 @@ We have taken the CT results generated for Ariane133-NG45 with 68% utilization t
   </tr>
 </tbody>
 </table>
+</p>
 
   
 The following table shows the P&R result for the post-CD macro placement.
@@ -1646,3 +1650,207 @@ We received an inquiry regarding the multiple ways in which macro placements cou
 <img width="300" src="./images/image9.png" alg="Ariane133_68_CT_iSpatial_Place">
 <img width="300" src="./images/image6.png" alg="Ariane133_68_CT_iSpatial_Route">
 </p>
+
+<a id="Question7"></a>
+**<span style="color:blue">Question 7.</span>** What happens if we skip CT and continue directly to standard-cell P&R (i.e., the Innovus 21.1 flow) once we have a macro placement from the commercial tool?
+
+At some point during the past weeks, we realized that this would also be a potential “baseline” for comparison. As can be seen below for both 68% and 51% variants of Ariane-133 in NG45, omitting the CT step can also produce good results by the Table 1 metrics. <span style="color:blue">At this point, we do **not** have any diagnosis or interpretation of this data</span>. One possible implication is that the Ariane-133 testcase is in some way not probative. The community’s suggestions (e.g., alternate testcases, constraints, floorplan setup, etc.) are always welcome. 
+
+<table>
+<thead>
+  <tr>
+    <th colspan="10"><p align="center">Concurrent macro placement (Ariane 68%) continuing straight into the Innovus 21.1 P&amp;R flow <span style="color:red">(no application of Circuit Training)</span> [**baseline CT result: [here](#Ariane133_68_CT)**]</p></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Physical Design Stage</td>
+    <td>Core Area <br>(um^2)</td>
+    <td>Standard Cell <br>Area (um^2)</td>
+    <td>Macro Area<br> (um^2)</td>
+    <td>Total Power <br>(mW)</td>
+    <td>Wirelength<br>(um)</td>
+    <td>WS<br>(ns)</td>
+    <td>TNS<br>(ns)</td>
+    <td>Congestion<br>(H)</td>
+    <td>Congestion<br>(V)</td>
+  </tr>
+  <tr>
+    <td>preCTS</td>
+    <td>1814274</td>
+    <td>214050</td>
+    <td>1018355.73</td>
+    <td>286.117</td>
+    <td>3656436</td>
+    <td>0.007</td>
+    <td>0</td>
+    <td>0.02%</td>
+    <td>0.01%</td>
+  </tr>
+  <tr>
+    <td>postCTS</td>
+    <td>1814274</td>
+    <td>215096</td>
+    <td>1018355.73</td>
+    <td>299.438</td>
+    <td>3662225</td>
+    <td>0.01</td>
+    <td>0</td>
+    <td>0.01%</td>
+    <td>0.02%</td>
+  </tr>
+  <tr>
+    <td>postRoute</td>
+    <td>1814274</td>
+    <td>215096</td>
+    <td>1018355.73</td>
+    <td>298.934</td>
+    <td>3780153</td>
+    <td>0.285</td>
+    <td>0</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td colspan="10"><p align="center">Concurrent macro placement (Ariane 51%) continuing straight into the Innovus 21.1 P&amp;R flow <span style="color:red">(no application of Circuit Training)</span> [**baseline CT result: [here](#Ariane133_51_CT)**]</p></td>
+  </tr>
+  <tr>
+    <td>Physical Design Stage</td>
+    <td>Core Area <br>(um^2)</td>
+    <td>Standard Cell Area (um^2)</td>
+    <td>Macro Area (um^2)</td>
+    <td>Total Power (mW)</td>
+    <td>Wirelength<br>(um)</td>
+    <td>WS<br>(ns)</td>
+    <td>TNS<br>(ns)</td>
+    <td>Congestion<br>(H)</td>
+    <td>Congestion<br>(V)</td>
+  </tr>
+  <tr>
+    <td>preCTS</td>
+    <td>2560080</td>
+    <td>214060</td>
+    <td>1018355.73</td>
+    <td>285.509</td>
+    <td>3647997</td>
+    <td>0.047</td>
+    <td>0</td>
+    <td>0.00%</td>
+    <td>0.00%</td>
+  </tr>
+  <tr>
+    <td>postCTS</td>
+    <td>2560080</td>
+    <td>215117</td>
+    <td>1018355.73</td>
+    <td>298.362</td>
+    <td>3649940</td>
+    <td>0.011</td>
+    <td>0</td>
+    <td>0.00%</td>
+    <td>0.01%</td>
+  </tr>
+  <tr>
+    <td>postRoute</td>
+    <td>2560080</td>
+    <td>215117</td>
+    <td>1018355.73</td>
+    <td>297.849</td>
+    <td>3764148</td>
+    <td>0.210</td>
+    <td>0</td>
+    <td></td>
+    <td></td>
+  </tr>
+</tbody>
+</table>
+
+Ariane 68%:
+<p align="center">
+<img width="300" src="./images/image8.png" alg="Ariane133_68_CT_CMP_Place">
+<img width="300" src="./images/image2.png" alg="Ariane133_68_CT_CMP_Route">
+</p>
+
+<a id="Question8"></a>
+**<span style="color:blue">Question 8.</span>** How does the tightness of timing constraints affect the (relative) performance of CT?  
+ 
+[Comment: This is related to Question 2, and is part of the broad question of field of use / sweet spot.  We still intend to work in the space of {design testcase} X {technology and design enablement} X {utilization} X {performance requirement}X experimental {questions, design/setup, execution} to reach conclusions that are above the bar of “satisfying readers”. Progress will continue to be reported here and in GitHub.]
+
+### **Circuit Training Baseline Result on “Our NVDLA-NanGate45_68”.**
+We have trained CT to generate a macro placement for the [NVDLA design](../../Flows/NanGate45/nvdla/). For this experiment we use the NanGate45 enablement; the initial canvas size is generated by setting utilization to 68%. We use the default hyperparameters used for Ariane to train CT for NVDLA design. The number of hard macros in NVDLA is 128, so we update [max_sequnece_length](https://github.com/google-research/circuit_training/blob/6a76e327a70b5f0c9e3291b57c085688386da04e/circuit_training/learning/ppo_collect.py#L53) to 129 in [ppo_collect.py](https://github.com/google-research/circuit_training/blob/6a76e327a70b5f0c9e3291b57c085688386da04e/circuit_training/learning/ppo_collect.py#L53) and [sequence_length](https://github.com/google-research/circuit_training/blob/6a76e327a70b5f0c9e3291b57c085688386da04e/circuit_training/learning/train_ppo.py#L57) to 129 in [train_ppo.py](https://github.com/google-research/circuit_training/blob/6a76e327a70b5f0c9e3291b57c085688386da04e/circuit_training/learning/train_ppo.py#L57).
+
+The following table and screenshots show the CT result.
+<table>
+<thead>
+  <tr>
+    <th colspan="10"><p align="center">Macro placement generated by Circuit Training on Our NVDLA (NG45) 68% utilization, post-macro placement flow using Innovus21.1</p></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Physical Design Stage</td>
+    <td>Core Area (um^2)</td>
+    <td>Standard Cell Area (um^2)</td>
+    <td>Macro Area (um^2)</td>
+    <td>Total Power (mW)</td>
+    <td>Wirelength (um)</td>
+    <td>WS <br>(ns)</td>
+    <td>TNS <br>(ns)</td>
+    <td>Congestion (H)</td>
+    <td>Congestion (V)</td>
+  </tr>
+  <tr>
+    <td>preCTS</td>
+    <td>4002458</td>
+    <td>401713</td>
+    <td>2325683</td>
+    <td>2428.453</td>
+    <td>13601973</td>
+    <td>-0.003</td>
+    <td>-0.045</td>
+    <td>0.40%</td>
+    <td>1.22%</td>
+  </tr>
+  <tr>
+    <td>postCTS</td>
+    <td>4002458</td>
+    <td>404398</td>
+    <td>2325683</td>
+    <td>2514.685</td>
+    <td>13677780</td>
+    <td>-0.009</td>
+    <td>-0.027</td>
+    <td>0.44%</td>
+    <td>1.54%</td>
+  </tr>
+  <tr>
+    <td>postRoute</td>
+    <td>4002458</td>
+    <td>404398</td>
+    <td>2325683</td>
+    <td>2491.368</td>
+    <td>14317085</td>
+    <td>0.142</td>
+    <td>0</td>
+    <td></td>
+    <td></td>
+  </tr>
+</tbody>
+</table>
+
+<p align="center">
+<img width="300" src="./images/image7.png" alg="NVDLA_68_CT_Place">
+<img width="300" src="./images/image12.png" alg="NVDLA_68_CT_Route">
+</p>
+
+## **Pinned (to bottom) question list:**
+
+**<span style="color:blue">[Question 1](#Question1).</span>** How does having an initial set of placement locations (from physical synthesis) affect the (relative) quality of the CT result?
+**<span style="color:blue">[Question 2](#Question2).</span>** How does utilization affect the (relative) performance of CT?
+**<span style="color:blue">[Question 3](#Question3).</span>** Is a testcase such as Ariane-133 “probative”, or do we need better testcases?
+**<span style="color:blue">[Question 4](#Question4).</span>** How much does the guidance to clustering that comes from (x,y) locations matter?
+**<span style="color:blue">[Question 5](Question5).</span>** What is the impact of the Coordinate Descent (CD) placer on proxy cost and Table 1 metric?
+**<span style="color:blue">[Question 6](#Question6).</span>** Are we using the industry tool in an “expert” manner?  (We believe so.)
+**<span style="color:blue">[Question 7](#Question7).</span>** What happens if we skip CT and continue directly to standard-cell P&R (i.e., the Innovus 21.1 flow) once we have a macro placement from the commercial tool?
+**<span style="color:blue">[Question 8](#Question8).</span>** How does the tightness of timing constraints affect the (relative) performance of CT?  
+
