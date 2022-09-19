@@ -4,7 +4,7 @@ In Circuit Training, *proxy cost* is the weighted sum of wirelength, density, an
 $$
 Proxy Cost = W_{wirelength} \times Cost_{wirelength} + W_{density} \times Cost_{density} + W_{congestion} \times Cost_{congestion} 
 $$ 
-
+  
 Where $W_{wirelength}$, $W_{density}$ and $W_{congestion}$ are the weights. From the [Circuit Training repo](https://github.com/google-research/circuit_training/blob/9e7097fa0c2a82030f43b298259941fc8ca6b7ae/circuit_training/environment/environment.py#L61-L65), we found that $W_{wirelength} = 1$, $W_{density} = 1$, and $W_{congestion} = 0.5$. From communication with Google engineers, we learned that in their internal flow, they use $W_{wirelength} = 1$, $W_{density} = 0.5$, and $W_{congestion} = 0.5$.
 
 CircuitTraining repo provides the plc_wrapper_main binary to compute these cost functions. There is no available detailed description, or open-source implementation, of these cost functions. With feedback and confirmations from Google engineers, we have implemented all three cost functions; the source code is available [here](../../CodeElements/Plc_client/plc_client_os.py). In the following section we provide a detailed description of the implementation of these cost functions.
@@ -20,8 +20,8 @@ The wirelength cost function depends on the net (bounding box) half-perimeter wi
 ##### **Procedure to compute net HPWL**
 1. Initialize $x_{min} = float_{max}$, $y_{min} = float_{max}$, $x_{max} = 0$, $y_{max} = 0$
 2. For each $node$ in net
-   1. $x_{min} = min(x_{min}, node{\rarr}x)$, $y_{min} = min(y_{min}, node{\rarr}y)$
-   2. $x_{max} = max(x_{max}, node{\rarr}x)$, $y_{max} = max(y_{max}, node{\rarr}y)$
+   1. $x_{min} = min(x_{min}, node \rarr x)$, $y_{min} = min(y_{min}, node \rarr y)$
+   2. $x_{max} = max(x_{max}, node \rarr x)$, $y_{max} = max(y_{max}, node \rarr y)$
 3. net_hpwl = $(x_{max} - x_{min}) + (x_{max} + x_{min})$
   
 A protobuf netlist consists of different types of $node$s. Different possible types of $node$s are macro, standard cell, macro pin and port. A net consists of one source $node$ and one or more sink $node$s. A net can have only standard cell, macro pin and port as its source or sink $node$s. In the following wirelength cost computation procedure, we use the term net weight, which is the weight of the source $node$ of the net. This weight indicates the total number of connections between the source and each sink $node$.  
@@ -30,8 +30,8 @@ A protobuf netlist consists of different types of $node$s. Different possible ty
 1. $hpwl = 0$, $net_{count} = 0$
 2. For each $net$
    1. Compute $net_{hpwl}$ using the previous procedure
-   2. $hpwl += net{\rarr}weight \times net_{hpwl}$
-   3. $net_{count} += net{\rarr}weight$
+   2. $hpwl += net \rarr weight \times net_{hpwl}$
+   3. $net_{count} += net \rarr weight$
 3. $Cost_{wirelength} = \frac{hpwl}{net_{count} \times (canvas_{height} + canvas_{width})}$
 
 In the above procedure, $canvas_{height}$ is the height of the canvas and $canvas_{width}$ is the width of the canvas.
