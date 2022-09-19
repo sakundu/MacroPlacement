@@ -104,3 +104,126 @@ In the following figure, P3 is the source and P1 and P2 are the sinks. We see th
 <img width="600" src="./images/image7.png" alg="ThreePin3">
 </p>
 
+Consider the three pin locations are $(i_1, j_1)$, $(i_2, j_2)$ and $(i_3, j_3)$.
+We compute congestion due to three-pins using two functions:
+1. $L_{routing}$
+2. $T_{routing}$
+
+In the below function all congestion cost computation takes into account the weight.
+
+First we describe these two functions and then we describe how the congestion due to three pin nets are computed.
+##### **Congestion cost update using $L_{routing}$:**
+The inputs are three pin grid id and net weight. We consider pin grids are  $(i_1, j_1)$, $(i_2, j_2)$ and $(i_3, j_3)$ where $i_1 < i_2 < i_3$ and $(j_1 < j_2 < j_3)$ or $(j_1 > j_2 > j_3)$.
+1. Add horizontal congestion cost due to the net to grids from $(i_1, j_1)$ to $(i_2-1, j_1)$
+2. Add horizontal congestion cost due to the net to grids from $(i_2, j_2)$ to $(i_3-1, j_2)$
+3. Add vertical congestion cost due to the net to grids from $(i_2, min(j_1, j_2))$ to $(i_2, max(j_1, j_2) - 1)$.
+4. Add vertical congestion cost due to the net to grids from $(i3, min(j_2, j_3))$ to $(i_3, max(j_2, j_3) - 1)$.
+
+##### **Congestion cost update using $T_{routing}$:**
+The inputs are three pin grid id and net weight. We consider pin grids as $(i_1, j_1)$, $(i_2, j_2)$ and $(i_3, j_3)$ where $(j_1 <= j_2 <= j_3 )$ or $(j_1 >= j_2 >= j_3)$.
+1. $i_{min} = min(i_1, i_2, i_3)$, $i_{max} = max(i_1, i_2, i_3)$
+2. Add horizontal congestion cost due to the net to grids from $(i_{min}, j_2)$ to $(i_{max} - 1, j_2)$.
+3. Add vertical congestion cost due to the net to the grid from $(i_1, min(j_1, j_2))$ to $(i_1, max(j_1, j_2) - 1)$.
+4. Add vertical congestion cost due to the net to the grid from $(i_3, min(j_2, j_3))$ to $(i_3, max(j_2, j_3) - 1)$.
+
+##### **Procedure congestion cost computation due to three-pin nets:**
+The inputs are three pin grid locations and the net weight.
+1. Sort the pin based on the column. After sorting pin locations are $(i_1, j_1)$, $(i_2, j_2)$ and $(i_3, j_3)$. As it is sorted based on column $i_1 <= i_2 <= i_3$.
+2. If $i_1 < i_2$ and $i_2 < i_3$ and $min(j_1, j_3) < j_2$ and $max(j_1, j_3) > j_2$:
+   1. Update congestion cost using $L_{routing}$.
+   2. Return.
+3. If $i_2 == i_3$ and $i_1 < i_2$ and $j_1 < min(j_2, j_3)$:
+   1. Add horizontal congestion cost due to the net to grids from $(i_1, j_1)$ to $(i_2-1, j_1)$
+   2. Add vertical congestion cost due to the net to grids from $(i_2, j_1)$ to $(i_2, max(j_2, j_3) -1)$
+   3. Return.
+4. If $j_2 == j_3$:
+   1. Add horizontal congestion cost due to the net to grids from $(i_1, j_1)$ to $(i_2 -1, j_1)$
+   2. Add horizontal congestion cost due to the net to grids from $(i_2, j_2)$ to $(i_3 -1, j_2)$
+   3. Add vertical congestion cost due to the net to grids from $(i_2, min(j_2, j_3))$ to $(i_2, max(j_2, j_3) - 1)$.
+   4. Return
+5. Update congestion cost using $T_{routing}$.
+
+
+The following four figures represent the four cases mentioned in the above procedure from point two to point five.
+
+<p align="center">
+<img width="300" src="./images/image9.png" alg="ThreePin4">
+</p>
+
+<p align="center">
+Figure corresponding to point two.
+</p>
+
+<p align="center">
+<img width="300" src="./images/image5.png" alg="ThreePin5">
+</p>
+
+<p align="center">
+Figure corresponding to point three.
+</p>
+
+<p align="center">
+<img width="300" src="./images/image4.png" alg="ThreePin6">
+</p>
+
+<p align="center">
+Figure corresponding to point four.
+</p>
+
+<p align="center">
+<img width="300" src="./images/image11.png" alg="ThreePin7">
+</p>
+
+<p align="center">
+Figure corresponding to point five.
+</p>
+
+#### *Congestion due to multi-pin nets where the number of pins is greater than three*
+1. Consider the net is a n-pin net where $n > 3$. 
+2. We break this net into n-1 two pin nets where the source node is the common node.
+3. For each two pin nets we update congestion values.
+
+#### *Computation for Smoothing:*
+1. **Congestion smoothing = 0.0**
+   1. Return the grid congestion that is due to net routing: no smoothing is applied.
+2. **Congestion smoothing > 0.0 = k** (k is an integer; both CT and our code appear to use the floor of any non-integer smoothing value)
+   1. Take grid congestion due to net routing
+   2. For horizontal grid congestion
+      1. For each gridcell
+         1. If not out-of-bound, take k gridcells on each side (left/right), divide the current cell entry by the total number of gridcells taken and add the value to the corresponding gridcell.
+   3. For vertical grid congestion
+      1. For each gridcell
+         1. If not out-of-bound, take k gridcells on each side (up/down), divide the current cell entry by the total number of gridcells taken and add the value to the corresponding gridcell.
+   4. For example, suppose that smoothing = 2 (default value), and we apply it to horizontal grid congestion in four rows of gridcells with respect to the red gridcell highlighted in each row. Then, the blue gridcells in each row show the numbers of gridcells that we divide by (respectively from the top row to the bottom row:  3, 4, 5, 4) when smoothing congestion.
+
+<p align="center">
+<img width="300" src="./images/image3.png" alg="CongestionSmooth1">
+</p>
+
+#### *Computation for Macro Congestion:*
+- For each soft macro + hard MACRO:
+   - For each gridcell it overlaps with:
+      - For both horizontal and vertical macro routing congestion map:
+         1. Find the dimension of overlap, multiply by macro routing allocation
+         2. Divide by (the grid_cell dimension multiplied by routing per micron)
+         3. Add to the corresponding gridcell
+
+- Example:
+  - Given a single hard macro HM_1 (pink rectangle in the figure below), we have two pins instantiated on the top-right and bottom-left, driven by the ports at “P_1” located at the bottom-left of the canvas.
+
+<p align="center">
+<img width="300" src="./images/image8.png" alg="MacroCongestion1">
+</p>
+<p align="center">
+<img width="300" src="./images/image6.png" alg="MacroCongestion2">
+</p>
+<p align="center">
+<img width="300" src="./images/image12.png" alg="MacroCongestion3">
+</p>
+
+  - Whenever there are gridcells partially overlapped, whether in horizontal or vertical direction, we set the vertical congestion of the top gridcells to 0 (if partially overlapped vertically) and we set the horizontal congestion of the right gridcells to 0 (if partially overlapped horizontally).
+
+#### *Computation of the final congestion cost:*
+- Adding the Macro allocation congestion and Net routing congestion together for both Vertical and Horizontal congestion map
+- Concat both vertical and horizontal congestion maps together.
+- Take the top **5**% of the most congested gridcells **in the concatenation**, and average them out to get the final congestion cost. 
